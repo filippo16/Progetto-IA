@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import torch
 import matplotlib.pyplot as plt
 
-def train(model, device, train_loader, optimizer, criterion, num_epochs):
+def train(model, device, train_loader, optimizer, criterion, num_epochs, scheduler):
     model.train()
     
     # Lista per memorizzare la perdita media per ogni epoca
@@ -29,6 +29,9 @@ def train(model, device, train_loader, optimizer, criterion, num_epochs):
             # Stampa della perdita per ogni batch
             print(f'[Epoch {epoch + 1}/{num_epochs}, Batch {batch_idx + 1}] Loss: {loss.item():.4f}')
 
+        if scheduler:
+            scheduler.step()
+        
         # Calcola e aggiungi la perdita media di quest'epoca
         avg_epoch_loss = running_loss / len(train_loader)
         epoch_loss_values.append(avg_epoch_loss)
