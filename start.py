@@ -17,7 +17,7 @@ reduction_factor = 0.1  # Percentuale del dataset da utilizzare (es. 0.1 = 10%)
 DOWNLOAD = False  # Imposta a False se il dataset è già stato scaricato
 TRAINING = False  # Imposta a False per eseguire solo il test
 
-# Trasformazioni per i dati di SVHN
+
 transform = transforms.Compose([
     #transforms.RandomRotation(10),  #Data Augmentation
     #transforms.RandomCrop(32, padding=4),
@@ -40,15 +40,15 @@ if REDUCE_DATASET:
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
-# Dispositivo
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# Modello
+
 model = ResNet(num_classes=10).to(device)
 
-# Ottimizzatore e criterio di perdita
+# Ottimizzatore e criterion di perdità e scheduler
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-criterion = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss() # Per le classificazione multiclasse
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
 if TRAINING:

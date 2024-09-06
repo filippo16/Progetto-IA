@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 def train(model, device, train_loader, optimizer, criterion, num_epochs, scheduler):
     model.train()
     
-    # Lista per memorizzare la perdita media per ogni epoca
     epoch_loss_values = []
 
     for epoch in range(num_epochs):
@@ -26,21 +25,21 @@ def train(model, device, train_loader, optimizer, criterion, num_epochs, schedul
 
             running_loss += loss.item()
 
-            # Stampa della perdita per ogni batch
+            
             print(f'[Epoch {epoch + 1}/{num_epochs}, Batch {batch_idx + 1}] Loss: {loss.item():.4f}')
 
         if scheduler:
             scheduler.step()
         
-        # Calcola e aggiungi la perdita media di quest'epoca
+        
         avg_epoch_loss = running_loss / len(train_loader)
         epoch_loss_values.append(avg_epoch_loss)
-        
-    # Salva il modello addestrato
+
+    # Salva il modello  addestrato
     torch.save(model.state_dict(), './out/model_final.pth')
     print('Modello salvato come ./out/model_final.pth')
 
-    # Grafico della loss
+    # Grafico loss
     plt.figure(figsize=(10, 5))
     plt.plot(range(1, num_epochs + 1), epoch_loss_values, marker='o', linestyle='-', color='r', label='Average Epoch Loss')
     plt.xlabel('Epoch')
@@ -53,7 +52,6 @@ def train(model, device, train_loader, optimizer, criterion, num_epochs, schedul
 
 
 def test(model, device, test_loader, criterion):
-    # Carica il modello salvato
     model.load_state_dict(torch.load('./out/model_final.pth'))
     model.eval()
 
