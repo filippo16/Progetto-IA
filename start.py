@@ -11,7 +11,7 @@ from net_runner import train, test
 # Parametri configurabili
 batch_size = 16
 num_epochs = 15
-learning_rate = 0.001
+learning_rate = 0.0013
 REDUCE_DATASET = True  # Imposta a True per ridurre il dataset
 reduction_factor = 0.1  # Percentuale del dataset da utilizzare (es. 0.1 = 10%)
 DOWNLOAD = False  # Imposta a False se il dataset è già stato scaricato
@@ -19,8 +19,7 @@ TRAINING = False  # Imposta a False per eseguire solo il test
 
 
 transform = transforms.Compose([
-    #transforms.RandomRotation(10),  #Data Augmentation
-    #transforms.RandomCrop(32, padding=4),
+    transforms.RandomRotation(10),  #Data Augmentation
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ])
@@ -49,9 +48,12 @@ model = ResNet(num_classes=10).to(device)
 # Ottimizzatore e criterion di perdità e scheduler
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss() # Per le classificazione multiclasse
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
 if TRAINING:
     train(model, device, train_loader, optimizer, criterion, num_epochs, scheduler)
+    print('Testing...')
+    test(model, device, test_loader, criterion)
 else:
+    print('Testing...')
     test(model, device, test_loader, criterion)
