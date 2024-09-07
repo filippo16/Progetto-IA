@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 
 from net import ResNet
 from net_runner import train, test
+from analysis import plot_class_distribution
 
 # Parametri configurabili
 batch_size = 16
@@ -17,6 +18,8 @@ reduction_factor = 0.1  # Percentuale del dataset da utilizzare (es. 0.1 = 10%)
 DOWNLOAD = False  # Imposta a False se il dataset è già stato scaricato
 TRAINING = False  # Imposta a False per eseguire solo il test
 
+# Plot della distribuzione delle classi
+plot_class_distribution('./data/train_32x32.mat')
 
 transform = transforms.Compose([
     transforms.RandomRotation(10),  #Data Augmentation
