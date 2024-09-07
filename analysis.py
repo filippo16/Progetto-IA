@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 # Caricamento del dataset SVHN
-data = sio.loadmat('train_32x32.mat')
+data = sio.loadmat('./data/train_32x32.mat')
 
 # Estrazione e correzione delle etichette
 labels = data['y'].flatten()
@@ -28,7 +28,6 @@ plt.show()
 
 # Salvataggio del grafico
 plt.savefig('distribuzione_classi_svhn.png')
-print("Grafico salvato come 'distribuzione_classi_svhn.png'")
 
 # Stampa dei valori numerici
 for i in range(10):
