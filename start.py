@@ -15,11 +15,8 @@ num_epochs = 15
 learning_rate = 0.0013
 REDUCE_DATASET = True  # Imposta a True per ridurre il dataset
 reduction_factor = 0.1  # Percentuale del dataset da utilizzare (es. 0.1 = 10%)
-DOWNLOAD = False  # Imposta a False se il dataset è già stato scaricato
+DOWNLOAD = True  # Imposta a False se il dataset è già stato scaricato
 TRAINING = False  # Imposta a False per eseguire solo il test
-
-# Plot della distribuzione delle classi
-plot_class_distribution('./data/train_32x32.mat')
 
 transform = transforms.Compose([
     transforms.RandomRotation(10),  #Data Augmentation
@@ -30,6 +27,9 @@ transform = transforms.Compose([
 # Caricamento del dataset SVHN
 train_set = torchvision.datasets.SVHN(root='./data', split='train', download=DOWNLOAD, transform=transform)
 test_set = torchvision.datasets.SVHN(root='./data', split='test', download=DOWNLOAD, transform=transform)
+
+# Plot della distribuzione delle classi
+plot_class_distribution('./data/train_32x32.mat')
 
 # Riduzione del dataset se richiesto
 if REDUCE_DATASET:
