@@ -1,4 +1,5 @@
 {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
       "io": {
@@ -35,9 +36,35 @@
           },
           "training": {
             "type": "boolean"
+          },
+          "scheduler": {
+            "type": "object",
+            "properties": {
+              "isActive": {
+                "type": "boolean"
+              },
+              "step_size": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "gamma": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": ["isActive", "step_size", "gamma"]
           }
         },
-        "required": ["batch_size", "num_epochs", "learning_rate", "reduce_dataset", "reduction_factor", "training"]
+        "required": [
+          "batch_size", 
+          "num_epochs", 
+          "learning_rate", 
+          "reduce_dataset", 
+          "reduction_factor", 
+          "training",
+          "scheduler"
+        ]
       }
     },
     "required": ["io", "config"]
