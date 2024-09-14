@@ -1,0 +1,14 @@
+{
+    "io": {
+        "out_folder": "./out"
+    },
+    "config": {
+        "batch_size": 16,
+        "num_epochs": 15,
+        "learning_rate": 0.0013,
+        "reduce_dataset": true,
+        "reduction_factor": 0.1,
+        "download": true,
+        "training": false
+    }
+}
