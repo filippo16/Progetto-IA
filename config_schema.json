@@ -1,0 +1,45 @@
+{
+    "type": "object",
+    "properties": {
+      "io": {
+        "type": "object",
+        "properties": {
+          "out_folder": {
+            "type": "string"
+          }
+        },
+        "required": ["out_folder"]
+      },
+      "config": {
+        "type": "object",
+        "properties": {
+          "batch_size": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "num_epochs": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "learning_rate": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reduce_dataset": {
+            "type": "boolean"
+          },
+          "reduction_factor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "training": {
+            "type": "boolean"
+          }
+        },
+        "required": ["batch_size", "num_epochs", "learning_rate", "reduce_dataset", "reduction_factor", "training"]
+      }
+    },
+    "required": ["io", "config"]
+  }
+  
