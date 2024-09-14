@@ -5,6 +5,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 import jsonschema
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -31,16 +32,16 @@ def ifDataExist(directory):
     data_path = Path(directory)
     if not data_path.exists() or not data_path.is_dir():
         print(f"La directory {directory} non esiste o non è valida.")
-        return False
+        return True
     
     mat_files = list(data_path.glob('*.mat'))
     
     if len(mat_files) >= 2:
         print(f"Sono stati trovati {len(mat_files)} file .mat.")
-        return True
+        return False
     else:
         print(f"Sono stati trovati solo {len(mat_files)} file .mat.")
-        return False
+        return True
     
 def main(cfg):
     
@@ -79,9 +80,9 @@ def main(cfg):
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.config.learning_rate)
     criterion = nn.CrossEntropyLoss() # Per le classificazione multiclasse
     if cfg.config.scheduler.isActive: # Si potrebbe anche togliere il controllo e creare sempre lo scheduler
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=cfg.config.scheduler.steo_size, gamma=cfg.config.scheduler.gamma)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=cfg.config.scheduler.step_size, gamma=cfg.config.scheduler.gamma)
 
-    if TRAINING:
+    if cfg.config.training:
         train(model, device, train_loader, optimizer, criterion, cfg.config.num_epochs, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
         print('Testing...')
         test(model, device, test_loader, criterion)
