@@ -7,7 +7,7 @@
         "batch_size": 16,
         "num_epochs": 2,
         "learning_rate": 0.0013,
-        "reduction_factor": 0.01,
+        "reduction_factor": 0.1,
         "reduce_dataset": true,
         "training": true,
 
