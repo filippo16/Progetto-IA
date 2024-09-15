@@ -9,8 +9,6 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from net import ResNet
-from net_runner import train, test
 from analysis import plot_class_distribution
 
 # # Parametri configurabili
@@ -46,6 +44,12 @@ def ifDataExist(directory):
 def main(cfg):
     
     DOWNLOAD = ifDataExist('./data')
+    
+    transform = transforms.Compose([
+        transforms.RandomRotation(10),  #Data Augmentation
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    ])
 
     # Caricamento del dataset SVHN
     train_set = torchvision.datasets.SVHN(root='./data', split='train', download=DOWNLOAD, transform=transform)
@@ -72,9 +76,9 @@ def main(cfg):
     val_loader = DataLoader(val_set, batch_size=cfg.config.batch_size, shuffle=False)
     test_loader = DataLoader(test_set, batch_size=cfg.config.batch_size, shuffle=False)
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    model = ResNet(num_classes=10).to(device)
+    # model = ResNet(num_classes=10).to(device)
 
     # Ottimizzatore e criterion di perdità e scheduler
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.config.learning_rate)
@@ -82,13 +86,15 @@ def main(cfg):
     if cfg.config.scheduler.isActive: # Si potrebbe anche togliere il controllo e creare sempre lo scheduler
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=cfg.config.scheduler.step_size, gamma=cfg.config.scheduler.gamma)
 
+    netrunner = NetRunner(optimizer, criterion, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
+    
     if cfg.config.training:
-        train(model, device, train_loader, optimizer, criterion, cfg.config.num_epochs, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
+        netrunner.train(train_loader, cfg.config.num_epochs)
         print('Testing...')
-        test(model, device, test_loader, criterion)
+        netrunner.test(test_loader)
     else:
         print('Testing...')
-        test(model, device, test_loader, criterion)
+        netrunner.test(test_loader)
 
 
 
