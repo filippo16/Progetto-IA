@@ -63,7 +63,7 @@ class NetRunner:
             
             if early_stop_check and (num_epochs + 1) % es_loss_evaluation_epochs == 0: # Per l'early stopping
                 print('Validating...')
-                val_loss = self.test(val_loader, use_current_model=True)
+                val_loss = self.test(val_loader, use_current_model=True, validation=True)
                 if va_loss < best_va_loss:
                     
                     # Calcolo il tasso di miglioramento.
@@ -72,11 +72,11 @@ class NetRunner:
                     # Verifico che il miglioramento non sia inferiore al tasso.
                     if improve_ratio >= es_improvement_rate:
                         best_va_loss = va_loss
-                        va_loss_no_improve_ep_ctr = 0
+                        va_loss_no_improve = 0
                     else:
-                        va_loss_no_improve_ep_ctr += 1
+                        va_loss_no_improve += 1
                 else:
-                    va_loss_no_improve_ep_ctr += 1
+                    va_loss_no_improve += 1
             
             if va_loss_no_improve >= es_patience: # Early stopping effettivo
                 print(f"Early stopping all'epoca {epoch + 1}")
@@ -101,7 +101,7 @@ class NetRunner:
         plt.show()
 
 
-    def test(self, test_loader, use_current_model=False):
+    def test(self, test_loader, use_current_model=False, validation=False):
         if use_current_model:
             mdoel = self.model
         else:
@@ -129,5 +129,9 @@ class NetRunner:
 
         accuracy = 100. * correct / total
         average_loss = test_loss / len(test_loader)
-        return average_loss
-        #print(f'Test set: Average loss: {average_loss:.4f}, Accuracy: {correct}/{total} ({accuracy:.2f}%)')
+        if validation:
+            print(f'Validation set: Average loss: {average_loss:.4f}, Accuracy: {correct}/{total} ({accuracy:.2f}%)')
+            return average_loss
+        else:
+            print(f'Test set: Average loss: {average_loss:.4f}, Accuracy: {correct}/{total} ({accuracy:.2f}%)')
+        
