@@ -3,8 +3,12 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from pathlib import Path
+import numpy as np
 
 from net import ResNet
+
+torch.manual_seed(42)
+np.random.seed(42)
 
 class NetRunner:
     def __init__(self, cfg):
@@ -25,7 +29,7 @@ class NetRunner:
         #self.model.train()
         num_epochs = self.cfg.config.num_epochs
         es_start_epoch = self.cfg.config.early_stopping.start_epoch
-        es_loss_loss_evolution_epochs_epochs = self.cfg.config.early_stopping.loss_evolution_epochs
+        es_loss_evolution_epochs = self.cfg.config.early_stopping.loss_evolution_epochs
         es_patience = self.cfg.config.early_stopping.patience
         es_improvement_rate = self.cfg.config.early_stopping.improvement_rate
         
@@ -40,7 +44,7 @@ class NetRunner:
         for epoch in range(num_epochs):
             running_loss = 0.0
             
-            if (num_epochs + 1) == es_start_epoch: # Controllo per l'early stopping per inizio epoca
+            if (epoch + 1) == es_start_epoch and self.cfg.config.early_stopping.isActive: # Conferma di cehck per early stopping
                 early_stop_check = True
             
             for batch_idx, (inputs, targets) in enumerate(train_loader):
@@ -65,20 +69,21 @@ class NetRunner:
             
             if avg_epoch_loss < best_tr_loss: # Salva il modello con la loss migliore
                 best_tr_loss = avg_epoch_loss
+                print('Save best model...')
                 torch.save(self.model.state_dict(), './out/best_model_sd.pth')
                 torch.save(self.model, './out/best_model.pth')
             
-            if early_stop_check and (num_epochs + 1) % es_loss_loss_evolution_epochs == 0: # Per l'early stopping
+            if early_stop_check and (epoch + 1) % es_loss_evolution_epochs == 0: # Per l'early stopping
                 print('Validating...')
                 val_loss = self.test(val_loader, use_current_model=True, validation=True)
-                if va_loss < best_va_loss:
+                if val_loss < best_va_loss:
                     
                     # Calcolo il tasso di miglioramento.
-                    improve_ratio = abs((va_loss / best_va_loss) - 1) * 100
+                    improve_ratio = abs((val_loss / best_va_loss) - 1) * 100
                     
                     # Verifico che il miglioramento non sia inferiore al tasso.
                     if improve_ratio >= es_improvement_rate:
-                        best_va_loss = va_loss
+                        best_va_loss = val_loss
                         va_loss_no_improve = 0
                     else:
                         va_loss_no_improve += 1
@@ -132,9 +137,9 @@ class NetRunner:
             print(f"La cartella '{cartella}' non esiste o non è una directory.")
         
 
-    def test(self, test_loader, use_current_model=False, validation=False):
+    def test(self, dataloader, use_current_model=False, validation=False):
         if use_current_model:
-            mdoel = self.model
+            model = self.model
         else:
             model = ResNet(num_classes=10).to(self.device)
             path = self.cfg.io.choice_model_path + '/' + self.getModel()
@@ -147,7 +152,7 @@ class NetRunner:
         total = 0
 
         with torch.no_grad():
-            for inputs, targets in test_loader:
+            for inputs, targets in dataloader:
                 inputs, targets = inputs.to(self.device), targets.to(self.device)
 
                 outputs = model(inputs)
@@ -159,7 +164,7 @@ class NetRunner:
                 correct += predicted.eq(targets).sum().item()
 
         accuracy = 100. * correct / total
-        average_loss = test_loss / len(test_loader)
+        average_loss = test_loss / len(dataloader)
         if validation:
             print(f'Validation set: Average loss: {average_loss:.4f}, Accuracy: {correct}/{total} ({accuracy:.2f}%)')
             return average_loss

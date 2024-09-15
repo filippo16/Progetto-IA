@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 import jsonschema
 import json
 import sys
+import numpy as np
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -41,7 +42,7 @@ def main(cfg):
     # Caricamento del dataset SVHN
     train_set = torchvision.datasets.SVHN(root='./data', split='train', download=DOWNLOAD, transform=transform)
     test_set = torchvision.datasets.SVHN(root='./data', split='test', download=DOWNLOAD, transform=transform)
-
+     
     # Plot della distribuzione delle classi
     #plot_class_distribution('./data/train_32x32.mat')
 
@@ -53,22 +54,23 @@ def main(cfg):
         train_set = Subset(train_set, train_indices)
         test_set = Subset(test_set, test_indices)
 
-    train_indices, val_indices = train_test_split(range(len(train_set)), test_size=0.2, stratify=[train_set[i][1] for i in range(len(train_set))]) 
+    train_indices, val_indices = train_test_split(range(len(train_set)), test_size=0.2, stratify=np.array([train_set[i][1] for i in range(len(train_set))])) 
 
     # Creazione dei nuovi Subset
-    train_set = Subset(train_set, train_indices)
+    f_train_set = Subset(train_set, train_indices)
     val_set = Subset(train_set, val_indices)
     
-    train_loader = DataLoader(train_set, batch_size=cfg.config.batch_size, shuffle=True) # Shuffle per evitare overfitting (mescolamento dei dati)
+    train_loader = DataLoader(f_train_set, batch_size=cfg.config.batch_size, shuffle=True) # Shuffle per evitare overfitting (mescolamento dei dati)
     val_loader = DataLoader(val_set, batch_size=cfg.config.batch_size, shuffle=False)
     test_loader = DataLoader(test_set, batch_size=cfg.config.batch_size, shuffle=False)
 
     netrunner = NetRunner(cfg)
     
     if cfg.config.training:
+        print('Training...')
         netrunner.train(train_loader, val_loader)
         print('Testing...')
-        netrunner.test(test_loader)
+        netrunner.test(test_loader, use_current_model=True)
     else:
         print('Testing...')
         netrunner.test(test_loader)

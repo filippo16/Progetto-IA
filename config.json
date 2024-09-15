@@ -5,11 +5,11 @@
     },
     "config": {
         "batch_size": 16,
-        "num_epochs": 1,
+        "num_epochs": 2,
         "learning_rate": 0.0013,
-        "reduction_factor": 0.1,
+        "reduction_factor": 0.01,
         "reduce_dataset": true,
-        "training": false,
+        "training": true,
 
         "scheduler": {
             "isActive": true,
@@ -19,9 +19,9 @@
 
         "early_stopping": {
             "isActive": true,
-            "start_epoch": 5,
-            "loss_evolution_epochs": 5,
-            "patience": 5,
+            "start_epoch": 1,
+            "loss_evolution_epochs": 1,
+            "patience": 3,
             "improvement_rate": 5
         }
     }
