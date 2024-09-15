@@ -11,21 +11,6 @@ from types import SimpleNamespace
 
 from analysis import plot_class_distribution
 
-# # Parametri configurabili
-# batch_size = 16
-# num_epochs = 15
-# learning_rate = 0.0013
-# REDUCE_DATASET = True  # Imposta a True per ridurre il dataset
-# reduction_factor = 0.1  # Percentuale del dataset da utilizzare (es. 0.1 = 10%)
-# DOWNLOAD = True  # Imposta a False se il dataset è già stato scaricato
-# TRAINING = False  # Imposta a False per eseguire solo il test
-
-transform = transforms.Compose([
-    transforms.RandomRotation(10),  #Data Augmentation
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-])
-
 def ifDataExist(directory):
     data_path = Path(directory)
     if not data_path.exists() or not data_path.is_dir():
@@ -76,10 +61,6 @@ def main(cfg):
     val_loader = DataLoader(val_set, batch_size=cfg.config.batch_size, shuffle=False)
     test_loader = DataLoader(test_set, batch_size=cfg.config.batch_size, shuffle=False)
 
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    # model = ResNet(num_classes=10).to(device)
-
     # Ottimizzatore e criterion di perdità e scheduler
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.config.learning_rate)
     criterion = nn.CrossEntropyLoss() # Per le classificazione multiclasse
@@ -89,7 +70,7 @@ def main(cfg):
     netrunner = NetRunner(optimizer, criterion, cfg, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
     
     if cfg.config.training:
-        netrunner.train(train_loader, cfg.config.num_epochs)
+        netrunner.train(train_loader, val_loader, cfg.config.num_epochs)
         print('Testing...')
         netrunner.test(test_loader)
     else:
