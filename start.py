@@ -48,7 +48,7 @@ def main(cfg):
     test_set = torchvision.datasets.SVHN(root='./data', split='test', download=DOWNLOAD, transform=transform)
      
     # Plot della distribuzione delle classi
-    #plot_class_distribution('./data/train_32x32.mat')
+    plot_class_distribution('./data/train_32x32.mat')
 
     # Riduzione del dataset se richiesto
     if cfg.config.reduce_dataset:
