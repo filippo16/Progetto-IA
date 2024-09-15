@@ -1,10 +1,11 @@
 {
     "io": {
-        "out_folder": "./out"
+        "out_path": "./out",
+        "choice_model_path": "./other_models"
     },
     "config": {
         "batch_size": 16,
-        "num_epochs": 15,
+        "num_epochs": 1,
         "learning_rate": 0.0013,
         "reduction_factor": 0.1,
         "reduce_dataset": true,
@@ -16,7 +17,7 @@
             "gamma": 0.1
         },
 
-        "early_stop": {
+        "early_stopping": {
             "isActive": true,
             "start_epoch": 5,
             "loss_evolution_epochs": 5,

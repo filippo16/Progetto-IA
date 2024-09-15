@@ -5,11 +5,14 @@
       "io": {
         "type": "object",
         "properties": {
-          "out_folder": {
-            "type": "string"
-          }
+            "out_path": {
+                "type": "string"
+            },
+            "choice_model_path": {
+                "type": "string"
+            }
         },
-        "required": ["out_folder"]
+        "required": ["choice_model_path"]
       },
       "config": {
         "type": "object",
@@ -55,7 +58,7 @@
             },
             "required": ["isActive", "step_size", "gamma"]
           },
-          "early_stop": {
+          "early_stopping": {
             "type": "object",
             "properties": {
               "isActive": {
@@ -89,7 +92,7 @@
           "reduction_factor",
           "training",
           "scheduler",
-          "early_stop"
+          "early_stopping"
         ]
       }
     },

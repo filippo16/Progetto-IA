@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 import jsonschema
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -42,7 +43,7 @@ def main(cfg):
     test_set = torchvision.datasets.SVHN(root='./data', split='test', download=DOWNLOAD, transform=transform)
 
     # Plot della distribuzione delle classi
-    plot_class_distribution('./data/train_32x32.mat')
+    #plot_class_distribution('./data/train_32x32.mat')
 
     # Riduzione del dataset se richiesto
     if cfg.config.reduce_dataset:
@@ -65,7 +66,7 @@ def main(cfg):
     netrunner = NetRunner(cfg)
     
     if cfg.config.training:
-        netrunner.train(train_loader, val_loader, cfg.config.num_epochs)
+        netrunner.train(train_loader, val_loader)
         print('Testing...')
         netrunner.test(test_loader)
     else:

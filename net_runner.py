@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from net import ResNet
 
@@ -20,11 +21,11 @@ class NetRunner:
         
         
 
-    def train(self, train_loader, val_loader, num_epochs):
+    def train(self, train_loader, val_loader):
         #self.model.train()
-        
+        num_epochs = self.cfg.config.num_epochs
         es_start_epoch = self.cfg.config.early_stopping.start_epoch
-        es_loss_evaluation_epochs = self.cfg.config.early_stopping.loss_evaluation_epochs
+        es_loss_loss_evolution_epochs_epochs = self.cfg.config.early_stopping.loss_evolution_epochs
         es_patience = self.cfg.config.early_stopping.patience
         es_improvement_rate = self.cfg.config.early_stopping.improvement_rate
         
@@ -55,7 +56,7 @@ class NetRunner:
                 
                 print(f'[Epoch {epoch + 1}/{num_epochs}, Batch {batch_idx + 1}] Loss: {loss.item():.4f}')
 
-            if scheduler:
+            if self.scheduler:
                 self.scheduler.step()
             
             
@@ -67,7 +68,7 @@ class NetRunner:
                 torch.save(self.model.state_dict(), './out/best_model_sd.pth')
                 torch.save(self.model, './out/best_model.pth')
             
-            if early_stop_check and (num_epochs + 1) % es_loss_evaluation_epochs == 0: # Per l'early stopping
+            if early_stop_check and (num_epochs + 1) % es_loss_loss_evolution_epochs == 0: # Per l'early stopping
                 print('Validating...')
                 val_loss = self.test(val_loader, use_current_model=True, validation=True)
                 if va_loss < best_va_loss:
@@ -106,15 +107,39 @@ class NetRunner:
         plt.tight_layout()
         plt.show()
 
+    def getModel(self):
+        p = Path(self.cfg.io.choice_model_path)
+        if p.exists() and p.is_dir():
+            files = [file.name for file in p.iterdir() if file.is_file()]
+            
+            print("File disponibili:")
+            for idx, file in enumerate(files, 1):
+                print(f"{idx}. {file}")
+            
+            while True:
+                try:
+                    scelta = int(input("Scegli il numero del file desiderato: ")) - 1
+                    if 0 <= scelta < len(files):
+                        file_scelto = files[scelta]
+                        print(f"Hai scelto: {file_scelto}")
+                        return str(file_scelto)
+                    else:
+                        print(f"Errore: inserisci un numero tra 1 e {len(files)}.")
+                except ValueError:
+                    print("Errore: inserisci un numero valido.")
+            
+        else:
+            print(f"La cartella '{cartella}' non esiste o non è una directory.")
+        
 
     def test(self, test_loader, use_current_model=False, validation=False):
         if use_current_model:
             mdoel = self.model
         else:
             model = ResNet(num_classes=10).to(self.device)
-            model.load_state_dict(torch.load('./out/model_final_sd.pth')) # Creare una nuova rete?
+            path = self.cfg.io.choice_model_path + '/' + self.getModel()
+            model.load_state_dict(torch.load(path)) # Creare una nuova rete?
         
-       
         model.eval()
 
         test_loss = 0
