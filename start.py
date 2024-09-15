@@ -86,7 +86,7 @@ def main(cfg):
     if cfg.config.scheduler.isActive: # Si potrebbe anche togliere il controllo e creare sempre lo scheduler
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=cfg.config.scheduler.step_size, gamma=cfg.config.scheduler.gamma)
 
-    netrunner = NetRunner(optimizer, criterion, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
+    netrunner = NetRunner(optimizer, criterion, cfg, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
     
     if cfg.config.training:
         netrunner.train(train_loader, cfg.config.num_epochs)
