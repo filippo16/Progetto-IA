@@ -6,13 +6,19 @@ import matplotlib.pyplot as plt
 from net import ResNet
 
 class NetRunner:
-    def __init__(self, optimizer, criterion, cfg, scheduler):
+    def __init__(self, cfg):
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self.model = ResNet(num_classes=10).to(device)
-        self.optimizer = optimizer
-        self.criterion = criterion
-        self.scheduler = scheduler
+        self.model = ResNet(num_classes=10).to(self.device)
+        
+        # Ottimizzatore e criterion di perdità e scheduler
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=cfg.config.learning_rate)
+        self.criterion = nn.CrossEntropyLoss() # Per le classificazione multiclasse
+        if cfg.config.scheduler.isActive:
+            self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=cfg.config.scheduler.step_size, gamma=cfg.config.scheduler.gamma)
+        
         self.cfg = cfg
+        
+        
 
     def train(self, train_loader, val_loader, num_epochs):
         #self.model.train()

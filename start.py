@@ -10,6 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from analysis import plot_class_distribution
+from net_runner import NetRunner
 
 def ifDataExist(directory):
     data_path = Path(directory)
@@ -61,13 +62,7 @@ def main(cfg):
     val_loader = DataLoader(val_set, batch_size=cfg.config.batch_size, shuffle=False)
     test_loader = DataLoader(test_set, batch_size=cfg.config.batch_size, shuffle=False)
 
-    # Ottimizzatore e criterion di perdità e scheduler
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.config.learning_rate)
-    criterion = nn.CrossEntropyLoss() # Per le classificazione multiclasse
-    if cfg.config.scheduler.isActive: # Si potrebbe anche togliere il controllo e creare sempre lo scheduler
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=cfg.config.scheduler.step_size, gamma=cfg.config.scheduler.gamma)
-
-    netrunner = NetRunner(optimizer, criterion, cfg, scheduler=None if not cfg.config.scheduler.isActive else scheduler)
+    netrunner = NetRunner(cfg)
     
     if cfg.config.training:
         netrunner.train(train_loader, val_loader, cfg.config.num_epochs)
