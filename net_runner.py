@@ -103,7 +103,7 @@ class NetRunner:
 
         # Grafico loss
         plt.figure(figsize=(10, 5))
-        plt.plot(range(1, num_epochs + 1), epoch_loss_values, marker='o', linestyle='-', color='r', label='Average Epoch Loss')
+        plt.plot(range(1, len(epoch_loss_values) + 1), epoch_loss_values, marker='o', linestyle='-', color='r', label='Average Epoch Loss')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.title('Training Loss per Epoch')

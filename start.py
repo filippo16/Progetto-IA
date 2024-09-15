@@ -33,6 +33,10 @@ def main(cfg):
     
     DOWNLOAD = ifDataExist('./data')
     
+    out_path = Path(cfg.io.out_path)
+    if not out_path.exists():
+        out_path.mkdir()
+    
     transform = transforms.Compose([
         transforms.RandomRotation(10),  #Data Augmentation
         transforms.ToTensor(),
